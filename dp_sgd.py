@@ -1,6 +1,6 @@
 """
-dp_sgd.py  --  Differentially Private SGD for a CNN + membership inference (Assignment 3, Q3)
-============================================================================================
+dp_sgd.py  --  Differentially Private SGD for a CNN + membership inference
+=========================================================================
 
 What is implemented here (from scratch, in PyTorch):
 
@@ -35,7 +35,7 @@ What is implemented here (from scratch, in PyTorch):
    B. training-set size N in {3k, 10k, 30k, 60k}: non-private vs DP.
    C. training duration: accuracy, epsilon and MIA are logged after every epoch.
 
-What the reported epsilon does and does NOT cover (stated in the report):
+What the reported epsilon does and does NOT cover:
   epsilon covers the released model weights produced by DP-SGD. It does NOT
   cover (i) the monitoring statistics logged during training (train loss,
   train accuracy, per-example gradient-norm statistics), (ii) the choice of
@@ -65,9 +65,8 @@ import torch.nn.functional as F
 from torch.func import functional_call, grad, vmap
 
 HERE = Path(__file__).resolve().parent
-# shared with the other question when run inside the assignment folder; a
-# standalone clone of this repository downloads Fashion-MNIST into ./data instead
-DATA_DIR = HERE.parent / "data" if (HERE.parent / "data").exists() else HERE / "data"          # shared with Q2
+# use a shared ../data folder if one exists, otherwise download Fashion-MNIST into ./data
+DATA_DIR = HERE.parent / "data" if (HERE.parent / "data").exists() else HERE / "data"
 RESULTS = HERE / "results"
 FIG_DIR = RESULTS / "figures"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -93,7 +92,7 @@ RDP_ORDERS = [1 + x / 10.0 for x in range(1, 100)] + list(range(12, 257))
 
 
 # ---------------------------------------------------------------------------
-# 1. DATA AND MODEL (identical to Q2 so the two questions are comparable)
+# 1. DATA AND MODEL
 # ---------------------------------------------------------------------------
 def load_fashion_mnist():
     from torchvision.datasets import FashionMNIST
@@ -107,7 +106,7 @@ def load_fashion_mnist():
 
 
 class SmallCNN(nn.Module):
-    """Same fixed architecture as Q2 (421,642 parameters). It has no BatchNorm,
+    """Small fixed CNN (421,642 parameters). It has no BatchNorm,
     which is also a requirement for DP-SGD: BatchNorm mixes information across
     the examples of a batch, so per-example gradients would not be well defined."""
 
