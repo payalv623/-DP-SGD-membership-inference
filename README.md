@@ -8,6 +8,7 @@
 Experiments show how the noise multiplier, clipping norm, training duration and dataset size affect accuracy, convergence, the privacy budget ε and real leakage.
 
 This is Question 3 of Assignment 3 for *Responsible AI for Foundation Models (DSE428/DSE628)*, IISER Bhopal.
+The report covering all three questions is in [`docs/`](docs): [short version, 4 pages](docs/Assignment3_Short_Report.pdf) and [full report](docs/Assignment3_Report.pdf).
 
 ## Method
 
@@ -73,4 +74,4 @@ python dp_sgd.py plot
 
 ## AI use
 
-All code was generated with **Claude Opus 5.5** (Anthropic, `claude-opus-5-5`) through Claude Code, following my prompts. The complete, verbatim prompt log is included in the assignment report submitted for the course.
+All code was generated with **Claude Opus 5.5** (Anthropic, `claude-opus-5-5`) through Claude Code, following my prompts. The complete, verbatim prompt log is in Appendix A of the [full report](docs/Assignment3_Report.pdf).
