@@ -563,7 +563,7 @@ def _style(ax):
         ax.spines[s].set_visible(False)
     for s in ("left", "bottom"):
         ax.spines[s].set_color(INK2)
-    ax.tick_params(colors=INK2, labelsize=8)
+    ax.tick_params(colors=INK2, labelsize=11)
     ax.grid(color=GRID, linewidth=0.6)
     ax.set_axisbelow(True)
 
@@ -572,6 +572,9 @@ def plot():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    # larger default text so figures stay readable when scaled to A4 width
+    plt.rcParams.update({"font.size": 12, "xtick.labelsize": 11, "ytick.labelsize": 11,
+                         "axes.labelsize": 12, "legend.fontsize": 11})
     FIG_DIR.mkdir(parents=True, exist_ok=True)
     logs = pd.read_csv(RESULTS / "epoch_logs.csv")
     grid = logs[logs.exp == "grid"]
@@ -589,24 +592,24 @@ def plot():
         if j == 0:          # epsilon depends only on sigma, so label each sigma once
             for _, r in d.iterrows():
                 ax.annotate(f"σ={r.sigma:g}", (r.eps, r.acc), textcoords="offset points", xytext=(0, 9),
-                            ha="center", fontsize=7, color=INK2)
+                            ha="center", fontsize=11.2, color=INK2)
         co = final[(final["clip"] == C) & (final.sigma == 0)].test_acc.mean()
         ax.axhline(co, color=SERIES[j], ls=":", lw=1.2, label=f"clip only (σ=0, ε=∞), C = {C}")
     ax.axhline(nonpriv, color=INK, ls="--", lw=1.2, label="non-private baseline")
     ax.set_xscale("log")
     ax.set_xlabel("achieved privacy budget ε  (δ = 1e-5, log scale; smaller = more private)",
-                  fontsize=8, color=INK2)
-    ax.set_ylabel(f"test accuracy (mean ± sd, {len(CFG['seeds'])} seeds)", fontsize=8, color=INK2)
+                  fontsize=12.8, color=INK2)
+    ax.set_ylabel("test accuracy (mean ± sd)", fontsize=12.8, color=INK2)
     ax.set_title(f"Privacy–utility trade-off after {CFG['epochs']} epochs (Fashion-MNIST)",
-                 fontsize=10, color=INK)
-    ax.legend(fontsize=7, frameon=False, loc="lower right")
+                 fontsize=14, color=INK)
+    ax.legend(fontsize=11.2, frameon=False, loc="lower right")
     _style(ax)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "fig1_accuracy_vs_epsilon.png", dpi=200)
     plt.close(fig)
 
     # Fig 2: convergence (test accuracy per epoch) for each sigma, one panel per C
-    fig, axes = plt.subplots(1, len(clips), figsize=(5.5 * len(clips), 4), sharey=True)
+    fig, axes = plt.subplots(1, len(clips), figsize=(4.4 * len(clips), 4.6), sharey=True)
     for ax, C in zip(np.atleast_1d(axes), clips):
         np_curve = grid[~grid.private].groupby("epoch").test_acc.mean()
         ax.plot(np_curve.index, np_curve.values, color=INK, lw=2, ls="--", label="non-private")
@@ -615,11 +618,11 @@ def plot():
         for j, s in enumerate(sorted(grid[grid.sigma > 0].sigma.unique())):
             c = grid[(grid["clip"] == C) & (grid.sigma == s)].groupby("epoch").test_acc.mean()
             ax.plot(c.index, c.values, color=SERIES[j], lw=2, label=f"σ = {s:g}")
-        ax.set_title(f"Convergence, clipping norm C = {C}", fontsize=10, color=INK)
-        ax.set_xlabel("epoch", fontsize=8, color=INK2)
+        ax.set_title(f"Convergence, clipping norm C = {C}", fontsize=14, color=INK)
+        ax.set_xlabel("epoch", fontsize=12.8, color=INK2)
         _style(ax)
-    np.atleast_1d(axes)[0].set_ylabel("test accuracy", fontsize=8, color=INK2)
-    np.atleast_1d(axes)[-1].legend(fontsize=7, frameon=False, loc="lower right")
+    np.atleast_1d(axes)[0].set_ylabel("test accuracy", fontsize=12.8, color=INK2)
+    np.atleast_1d(axes)[-1].legend(fontsize=11.2, frameon=False, loc="lower right")
     fig.tight_layout()
     fig.savefig(FIG_DIR / "fig2_convergence.png", dpi=200)
     plt.close(fig)
@@ -630,10 +633,10 @@ def plot():
         c = grid[(grid.sigma == s) & (grid["clip"] == clips[0])].groupby("epoch").epsilon.mean()
         ax.plot(c.index, c.values, color=SERIES[j], lw=2, label=f"σ = {s:g}")
     ax.set_yscale("log")
-    ax.set_xlabel("epoch (training duration)", fontsize=8, color=INK2)
-    ax.set_ylabel("ε spent so far (δ = 1e-5, log scale)", fontsize=8, color=INK2)
-    ax.set_title("Privacy budget consumed vs training duration (N = 60k, B = 256)", fontsize=10, color=INK)
-    ax.legend(fontsize=7, frameon=False)
+    ax.set_xlabel("epoch (training duration)", fontsize=12.8, color=INK2)
+    ax.set_ylabel("ε spent so far (δ = 1e-5, log scale)", fontsize=12.8, color=INK2)
+    ax.set_title("Privacy budget consumed vs training duration (N = 60k, B = 256)", fontsize=14, color=INK)
+    ax.legend(fontsize=11.2, frameon=False)
     _style(ax)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "fig3_epsilon_vs_epochs.png", dpi=200)
@@ -653,10 +656,10 @@ def plot():
     ax.scatter(np.full(len(np_f), e[-1]), np_f.mia_advantage, color=INK, marker="x", s=36,
                label="non-private (ε = ∞), all N")
     ax.set_xscale("log")
-    ax.set_xlabel("ε (log scale)", fontsize=8, color=INK2)
-    ax.set_ylabel("membership advantage (max TPR − FPR)", fontsize=8, color=INK2)
-    ax.set_title("Loss-threshold membership inference vs privacy budget", fontsize=10, color=INK)
-    ax.legend(fontsize=7, frameon=False, loc="upper left")
+    ax.set_xlabel("ε (log scale)", fontsize=12.8, color=INK2)
+    ax.set_ylabel("membership advantage (max TPR − FPR)", fontsize=12.8, color=INK2)
+    ax.set_title("Loss-threshold membership inference vs privacy budget", fontsize=14, color=INK)
+    ax.legend(fontsize=11.2, frameon=False, loc="upper left")
     _style(ax)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "fig4_mia_vs_epsilon.png", dpi=200)
@@ -668,7 +671,7 @@ def plot():
                 ((logs.exp == "size") | ((logs.exp == "grid") &
                                          ((~logs.private) | ((logs.sigma == CFG["size_exp_sigma"]) &
                                                              (logs["clip"] == CFG["size_exp_clip"])))))]
-    fig, axes = plt.subplots(1, 3, figsize=(14, 3.8))
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.6))
     for j, (priv, lab) in enumerate([(False, "non-private"),
                                      (True, f"DP-SGD σ={CFG['size_exp_sigma']:g}, C={CFG['size_exp_clip']:g}")]):
         d = size[size.private == priv].groupby("n_train").agg(acc=("test_acc", "mean"), eps=("epsilon", "mean"),
@@ -680,13 +683,13 @@ def plot():
     for ax, t, yl in zip(axes, ["Test accuracy", "Privacy budget ε (DP run)", "MIA ROC-AUC (0.5 = chance)"],
                          ["test accuracy", "ε (δ = 1e-5)", "attack AUC"]):
         ax.set_xscale("log")
-        ax.set_title(t, fontsize=10, color=INK)
-        ax.set_xlabel("training-set size N (log scale)", fontsize=8, color=INK2)
-        ax.set_ylabel(yl, fontsize=8, color=INK2)
+        ax.set_title(t, fontsize=14, color=INK)
+        ax.set_xlabel("training-set size N (log scale)", fontsize=12.8, color=INK2)
+        ax.set_ylabel(yl, fontsize=12.8, color=INK2)
         _style(ax)
     axes[2].axhline(0.5, color=INK2, ls=":", lw=1)
-    axes[0].legend(fontsize=7, frameon=False)
-    fig.suptitle(f"Effect of dataset size ({CFG['epochs']} epochs each)", fontsize=10, color=INK)
+    axes[0].legend(fontsize=11.2, frameon=False)
+    fig.suptitle(f"Effect of dataset size ({CFG['epochs']} epochs each)", fontsize=14, color=INK)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "fig5_dataset_size.png", dpi=200)
     plt.close(fig)
@@ -694,7 +697,7 @@ def plot():
     # Fig 6: training duration -- generalisation gap, MIA and epsilon over epochs
     dur = logs[logs.exp == "duration"]
     if len(dur):
-        fig, axes = plt.subplots(1, 3, figsize=(14, 3.8))
+        fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.6))
         for j, priv in enumerate([False, True]):
             d = dur[dur.private == priv].groupby("epoch").agg(
                 tr=("train_acc", "mean"), te=("test_acc", "mean"), auc=("mia_auc", "mean"),
@@ -711,14 +714,14 @@ def plot():
         axes[1].axhline(0.5, color=INK2, ls=":", lw=1)
         for ax, t, yl in zip(axes, ["Train vs test accuracy", "MIA ROC-AUC over training",
                                     "ε spent (DP run)"], ["accuracy", "attack AUC", "ε (δ = 1e-5)"]):
-            ax.set_title(t, fontsize=10, color=INK)
-            ax.set_xlabel("epoch", fontsize=8, color=INK2)
-            ax.set_ylabel(yl, fontsize=8, color=INK2)
+            ax.set_title(t, fontsize=14, color=INK)
+            ax.set_xlabel("epoch", fontsize=12.8, color=INK2)
+            ax.set_ylabel(yl, fontsize=12.8, color=INK2)
             _style(ax)
-        axes[0].legend(fontsize=6.5, frameon=False)
-        axes[1].legend(fontsize=7, frameon=False)
+        axes[0].legend(fontsize=10.4, frameon=False)
+        axes[1].legend(fontsize=11.2, frameon=False)
         fig.suptitle(f"Effect of training duration (N = {CFG['duration_n']}, "
-                     f"{CFG['duration_epochs']} epochs)", fontsize=10, color=INK)
+                     f"{CFG['duration_epochs']} epochs)", fontsize=14, color=INK)
         fig.tight_layout()
         fig.savefig(FIG_DIR / "fig6_training_duration.png", dpi=200)
         plt.close(fig)
